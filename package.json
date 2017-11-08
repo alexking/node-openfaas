@@ -8,6 +8,9 @@
     "lint": "xo --fix"
   },
   "author": "Austin Frey",
+  "contributors": [
+    "Finnian Anderson"
+	],
   "license": "MIT",
   "dependencies": {
     "got": "^7.1.0"
@@ -19,16 +22,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/austinfrey/node-openfaas.git"
+    "url": "git+https://github.com/openfaas-incubator/node-openfaas.git"
   },
   "keywords": [
     "serverless",
     "FaaS"
   ],
   "bugs": {
-    "url": "https://github.com/austinfrey/node-openfaas/issues"
+    "url": "https://github.com/openfaas-incubator/node-openfaas/issues"
   },
-  "homepage": "https://github.com/austinfrey/node-openfaas#readme",
+  "homepage": "https://github.com/openfaas-incubator/node-openfaas#readme",
   "xo": {
     "semicolon": false,
     "rules": {
