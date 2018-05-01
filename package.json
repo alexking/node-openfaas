@@ -1,6 +1,6 @@
 {
   "name": "openfaas",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "NodeJS wrapper around the OpenFaaS Gateway API w/ some additional helper functions",
   "main": "index.js",
   "scripts": {
@@ -9,11 +9,13 @@
   },
   "author": "Austin Frey",
   "contributors": [
-    "Finnian Anderson"
+    "Finnian Anderson",
+    "Alex King"
   ],
   "license": "MIT",
   "dependencies": {
-    "got": "^7.1.0"
+    "request": "^2.85.0",
+    "request-promise": "^4.2.2"
   },
   "devDependencies": {
     "nock": "^9.0.20",

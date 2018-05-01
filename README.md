@@ -7,8 +7,17 @@ style](https://img.shields.io/badge/code_style-XO-5ed9c7.svg)](https://github.co
 ```js
 const OpenFaaS = require('openfaas')
 
+// Send in a gateway URL 
 const openfaas = new OpenFaaS('http://localhost:8080')
 
+// Also supports any `request` library options 
+const clientWithAuth = new OpenFaaS('http://localhost:8080', {
+	auth: {
+		user: "jane",
+		pass: "123"
+	}
+})
+// Deploy 
 openfaas
 	.deploy(
 		'yolo', // name your function
@@ -18,6 +27,7 @@ openfaas
 	.then(x => console.log(x))
 	.catch(err => console.log(err))
 
+// Invoke 
 openfaas
 	.invoke(
 		'yolo', // function name
@@ -28,11 +38,13 @@ openfaas
 	.then(x => console.log(x)) // handle response
 	.catch(err => console.log(err))
 
+// Remove
 openfaas
 	.remove('yolo')
 	.then(x => console.log(x)) // handle response
 	.catch(err => console.log(err))
 
+// Chain functions together 
 openfaas
 	.compose('initial data', [
 		'func_nodeinfo',
