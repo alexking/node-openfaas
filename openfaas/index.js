@@ -36,7 +36,7 @@ class OpenFaaS {
 
 	/**
 	 * Invoke a function
-	 * 
+	 *
 	 * @param {string} func - name of the function to invoke
 	 * @param {object} data - function input
 	 * @param {object} options
