@@ -7,8 +7,8 @@ class OpenFaaS {
 	 * Setup a new OpenFaas object
 	 *
 	 * @constructs
-	 * @param {string} gateway			openfaas endpoint
-	 * @param {object} requestOptions 	any additional `request` library options
+	 * @param {string} gateway - openfaas endpoint
+	 * @param {object} requestOptions - any additional `request` library options
 	 */
 	constructor(gateway, requestOptions = {}) {
 		// Default request options
@@ -26,7 +26,7 @@ class OpenFaaS {
 	}
 
 	/**
-	 * Get a list of available functions and their info
+	 * Get a list of available functions and their data
 	 *
 	 * @returns {Promise<IncomingMessage>}
 	 */
@@ -36,7 +36,12 @@ class OpenFaaS {
 
 	/**
 	 * Invoke a function
-	 *
+	 * 
+	 * @param {string} func - name of the function to invoke
+	 * @param {object} data - function input
+	 * @param {object} options
+	 * @param {boolean} options.isJson - whether we are sending and expect JSON
+	 * @param {boolean} options.isBinaryResponse - whether we expect binary (instead of utf8)
 	 * @returns {Promise<IncomingMessage>}
 	 */
 	invoke(func, data, { isJson = false, isBinaryResponse = false } = {}) {
@@ -55,10 +60,10 @@ class OpenFaaS {
 	}
 
 	/**
-	 * List a single function and its info
+	 * List a single function and its data
 	 *
-	 * @param   {string}  func  function name
-	 * @returns {Promise<object>}
+	 * @param {string} func - function name
+	 * @returns {Promise<IncomingMessage>}
 	 */
 	inspect(func) {
 		const inspectEndpoint = path.join('/system/function/', func)
@@ -69,10 +74,10 @@ class OpenFaaS {
 	/**
 	 * Deploy a function
 	 *
-	 * @param {string} func 			name for the function
-	 * @param {string} image 			image to use
+	 * @param {string} func - name for the function
+	 * @param {string} image - image to use
 	 * @param {object} options
-	 * @param {string} options.network  name of the network to use
+	 * @param {string} options.network - name of the network to use
 	 * @returns {Promise<IncomingMessage>}
 	 */
 	deploy(func, image, { network = 'func_functions' } = {}) {
@@ -90,7 +95,7 @@ class OpenFaaS {
 	/**
 	 * Remove a function
 	 *
-	 * @param {string}  name  function name
+	 * @param {string} name - function name
 	 * @returns {Promise<IncomingMessage>}
 	 */
 	remove(name) {
@@ -108,9 +113,9 @@ class OpenFaaS {
 	 * as the input for the next (this takes place on the client side)
 	 *
 	 * @see https://github.com/openfaas/faas/blob/master/guide/chaining_functions.md
-	 * @param {*}      initial  input to send to the first function
-	 * @param {array}  funcs    list of functions to chain together
-	 * @param {object} options  options to pass to each invoke
+	 * @param {*} initial - input to send to the first function
+	 * @param {array} funcs - list of functions to chain together
+	 * @param {object} options - options to pass to each invoke
 	 * @returns {Promise<IncomingMessage>}
 	 */
 	compose(initial, funcs, options = {}) {
