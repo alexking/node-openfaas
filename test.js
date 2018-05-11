@@ -18,7 +18,7 @@ test('Test typeofs', t => {
 	t.equals(typeof openfaas.list, 'function')
 })
 
-test('Test full API', async t => {
+test('Test management', async t => {
 	// Mock the REST API
 	nock('http://localhost:8080')
 
@@ -28,9 +28,6 @@ test('Test full API', async t => {
 			network: 'func_functions',
 			image: 'hello-serverless'
 		}).reply(200)
-
-		// Invoke
-		.post('/function/func_echoit', 'test').reply(200, 'test')
 
 		// List
 		.get('/system/functions').reply(200, [{
@@ -62,7 +59,7 @@ test('Test full API', async t => {
 		// Remove
 		.delete('/system/functions', { functionName: 'test-func' }).reply(200)
 
-	t.plan(11)
+	t.plan(9)
 
 	const openfaas = new OpenFaaS('http://localhost:8080')
 
@@ -72,13 +69,6 @@ test('Test full API', async t => {
 			'test-func',
 			'hello-serverless'
 		).then(x => t.equals(x.statusCode, 200))
-
-		// Test invoking a function
-		await openfaas.invoke('func_echoit', 'test', true)
-			.then(x => {
-				t.equals(x.statusCode, 200)
-				t.equals(x.body, 'test')
-			})
 
 		// Test listing functions
 		await openfaas.list()
@@ -121,6 +111,53 @@ test('Test full API', async t => {
 	}
 })
 
+test('Test invoke', async t => {
+	const callbackUrl = 'http://localhost'
+
+	nock('http://localhost:8080')
+		// Sync
+		.post('/function/func_echoit', 'test')
+		.reply(200, 'test')
+
+		// Async
+		.post('/async-function/func_echoit', 'test async')
+		.matchHeader('x-callback-url', callbackUrl)
+		.reply(202)
+
+		// Custom header
+		.post('/async-function/func_echoit', 'test custom')
+		.matchHeader('x-custom-header', 'bespoke')
+		.reply(202)
+
+	t.plan(4)
+
+	const openfaas = new OpenFaaS('http://localhost:8080')
+
+	try {
+		await openfaas.invoke('func_echoit', 'test').then(x => {
+			t.equals(x.statusCode, 200)
+			t.equals(x.body, 'test')
+		})
+
+		await openfaas.invoke('func_echoit', 'test async', {
+			callbackUrl
+		}).then(x => {
+			t.equals(x.statusCode, 202)
+		})
+
+		await openfaas.invoke('func_echoit', 'test custom', {
+			callbackUrl,
+			headers: {
+				'x-custom-header': 'bespoke'
+			}
+		}).then(x => {
+			t.equals(x.statusCode, 202)
+		})
+	} catch (err) {
+		console.error(err)
+	}
+})
+
 test('Test basic auth', async t => {
 	// Mock a gateway behind basic auth
 	nock('http://localhost:8080')
@@ -145,3 +182,4 @@ test('Test basic auth', async t => {
 		t.equals(x.body, 'test')
 	}).catch(console.error)
 })
+

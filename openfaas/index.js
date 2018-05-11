@@ -42,21 +42,36 @@ class OpenFaaS {
 	 * @param {object} options
 	 * @param {boolean} options.isJson - whether we are sending and expect JSON
 	 * @param {boolean} options.isBinaryResponse - whether we expect binary (instead of utf8)
+	 * @param {string} options.callbackUrl - use async and post result back to this URL
+	 * @param {object} options.headers - add headers to the request
 	 * @returns {Promise<IncomingMessage>}
 	 */
-	invoke(func, data, { isJson = false, isBinaryResponse = false } = {}) {
-		const functionEndpoint = path.join('/function', func)
+	invoke(func, data, {
+		isJson = false,
+		isBinaryResponse = false,
+		callbackUrl = false,
+		headers = {}
+	} = {}) {
+		// If there is a callback url, then call the async endpoint
+		const action = callbackUrl ? 'async-function' : 'function'
+
+		const endpoint = path.join(action, func)
 
 		const options = {
 			json: isJson,
-			encoding: (isBinaryResponse ? null : 'utf8')
+			encoding: (isBinaryResponse ? null : 'utf8'),
+			headers
 		}
 
 		if (data) {
 			options.body = data
 		}
 
-		return this.request.post(functionEndpoint, options)
+		if (callbackUrl !== false) {
+			options.headers['X-Callback-Url'] = callbackUrl
+		}
+
+		return this.request.post(endpoint, options)
 	}
 
 	/**
